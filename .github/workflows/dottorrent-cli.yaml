@@ -39,8 +39,10 @@ jobs:
       - name: Install dottorrent-cli
         run: pipx install dottorrent-cli
         
-      - name: Download file
-        run: aria2c -x 16 -o "${{ inputs.file_name }}" "${{ inputs.url }}"
+      - name: Download file with increased timeout
+        run: |
+          aria2c --timeout=600 --retry-wait=30 --max-tries=5 -x 16 \
+                 -o "${{ inputs.file_name }}" "${{ inputs.url }}"
         
       - name: Create torrent using dottorrent-cli
         run: dottorrent --web_seed "${{ inputs.url }}" --source "torrent-webseed-creator" --comment "${{ inputs.comment }}" "${{ inputs.file_name }}" "${{ inputs.name }}.torrent"
